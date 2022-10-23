@@ -1,12 +1,13 @@
 import torch
 from torch import Tensor
-
+import torch.nn as nn
 
 def dice_coeff(input: Tensor, target: Tensor, reduce_batch_first: bool = False, epsilon=1e-6):
     # Average of Dice coefficient for all batches, or for a single mask
     assert input.size() == target.size()
     if input.dim() == 2 and reduce_batch_first:
-        raise ValueError(f'Dice: asked to reduce batch but got tensor without batch dimension (shape {input.shape})')
+        raise ValueError(
+            f'Dice: asked to reduce batch but got tensor without batch dimension (shape {input.shape})')
 
     if input.dim() == 2 or reduce_batch_first:
         inter = torch.dot(input.reshape(-1), target.reshape(-1))
@@ -28,7 +29,8 @@ def multiclass_dice_coeff(input: Tensor, target: Tensor, reduce_batch_first: boo
     assert input.size() == target.size()
     dice = 0
     for channel in range(input.shape[1]):
-        dice += dice_coeff(input[:, channel, ...], target[:, channel, ...], reduce_batch_first, epsilon)
+        dice += dice_coeff(input[:, channel, ...], target[:,
+                                                          channel, ...], reduce_batch_first, epsilon)
 
     return dice / input.shape[1]
 
@@ -38,3 +40,16 @@ def dice_loss(input: Tensor, target: Tensor, multiclass: bool = False):
     assert input.size() == target.size()
     fn = multiclass_dice_coeff if multiclass else dice_coeff
     return 1 - fn(input, target, reduce_batch_first=True)
+
+
+class BCEWithLogitsLoss2d(nn.Module):  # BCE with Sigmoid
+    def __init__(self, weight=None, weighted=True, use_dict=True, **kwargs):
+        super(BCEWithLogitsLoss2d, self).__init__()
+        self.bce_loss = nn.BCEWithLogitsLoss(
+            weight=weight)
+        self.use_dict = use_dict
+        self.weighted = weighted
+
+    def forward(self, prediction, targets):
+        loss = self.bce_loss(prediction, targets)
+        return loss

@@ -9,17 +9,16 @@
 
 Customized implementation of the [U-Net](https://arxiv.org/abs/1505.04597) in PyTorch for Kaggle's [Carvana Image Masking Challenge](https://www.kaggle.com/c/carvana-image-masking-challenge) from high definition images.
 
-- [Quick start](#quick-start)
-  - [Without Docker](#without-docker)
-  - [With Docker](#with-docker)
-- [Description](#description)
-- [Usage](#usage)
-  - [Docker](#docker)
-  - [Training](#training)
-  - [Prediction](#prediction)
-- [Weights & Biases](#weights--biases)
-- [Pretrained model](#pretrained-model)
-- [Data](#data)
+- [U-Net: Semantic segmentation with PyTorch](#u-net-semantic-segmentation-with-pytorch)
+  - [Quick start](#quick-start)
+    - [Without Docker](#without-docker)
+  - [Usage](#usage)
+    - [DSA ADAPTATION prediction](#dsa-adaptation-prediction)
+    - [Training](#training)
+    - [Prediction](#prediction)
+  - [Weights & Biases](#weights--biases)
+  - [Pretrained model](#pretrained-model)
+  - [Data](#data)
 
 ## Quick start
 
@@ -40,51 +39,12 @@ bash scripts/download_data.sh
 python train.py --amp
 ```
 
-### With Docker
-
-1. [Install Docker 19.03 or later:](https://docs.docker.com/get-docker/)
-```bash
-curl https://get.docker.com | sh && sudo systemctl --now enable docker
-```
-2. [Install the NVIDIA container toolkit:](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
-```bash
-distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
-   && curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add - \
-   && curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
-sudo apt-get update
-sudo apt-get install -y nvidia-docker2
-sudo systemctl restart docker
-```
-3. [Download and run the image:](https://hub.docker.com/repository/docker/milesial/unet)
-```bash
-sudo docker run --rm --shm-size=8g --ulimit memlock=-1 --gpus all -it milesial/unet
-```
-
-4. Download the data and run training:
-```bash
-bash scripts/download_data.sh
-python train.py --amp
-```
-
-## Description
-This model was trained from scratch with 5k images and scored a [Dice coefficient](https://en.wikipedia.org/wiki/S%C3%B8rensen%E2%80%93Dice_coefficient) of 0.988423 on over 100k test images.
-
-It can be easily used for multiclass segmentation, portrait segmentation, medical segmentation, ...
-
-
 ## Usage
 **Note : Use Python 3.6 or newer**
 
-### Docker
+### DSA ADAPTATION prediction
 
-A docker image containing the code and the dependencies is available on [DockerHub](https://hub.docker.com/repository/docker/milesial/unet).
-You can download and jump in the container with ([docker >=19.03](https://docs.docker.com/get-docker/)):
-
-```console
-docker run -it --rm --shm-size=8g --ulimit memlock=-1 --gpus all milesial/unet
-```
-
-
+**change the dir of DSA images, and the dir of the model**
 ### Training
 
 ```console
